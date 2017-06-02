@@ -402,6 +402,9 @@ SpinelNCPInstance::get_property(
 	} else if (strcaseequal(key.c_str(), kWPANTUNDProperty_NCPChannelMask)) {
 		cb(0, boost::any(get_default_channel_mask()));
 
+/*	} else if (strcaseequal(key.c_str(), kWPANTUNDProperty_NCPTXPower)) {
+		SIMPLE_SPINEL_GET(SPINEL_PROP_PHY_TX_POWER, SPINEL_DATATYPE_INT8_S);
+*/
 	} else if (strcaseequal(key.c_str(), kWPANTUNDProperty_NCPCCAThreshold)) {
 		SIMPLE_SPINEL_GET(SPINEL_PROP_PHY_CCA_THRESHOLD, SPINEL_DATATYPE_INT8_S);
 
@@ -705,6 +708,17 @@ SpinelNCPInstance::set_property(
 				.set_callback(cb)
 				.add_command(
 					SpinelPackData(SPINEL_FRAME_PACK_CMD_PROP_VALUE_SET(SPINEL_DATATYPE_UINT8_S), SPINEL_PROP_PHY_CHAN, channel)
+				)
+				.finish()
+			);
+
+		} else if (strcaseequal(key.c_str(), kWPANTUNDProperty_NCPTXPower)) {
+			int8_t txPower = any_to_int(value);
+
+			start_new_task(SpinelNCPTaskSendCommand::Factory(this)
+				.set_callback(cb)
+				.add_command(
+					SpinelPackData(SPINEL_FRAME_PACK_CMD_PROP_VALUE_SET(SPINEL_DATATYPE_INT8_S), SPINEL_PROP_PHY_TX_POWER, txPower)
 				)
 				.finish()
 			);
